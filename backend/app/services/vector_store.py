@@ -71,15 +71,15 @@ async def process_and_store_chunks(raw_chunks: List[Dict[str, Any]], session_id:
     # Extract clean text representations for vectorization
     texts_to_embed = [c["content"] for c in final_chunks]
     all_vectors = []
-    batch_size = 100
+    batch_size = 20
 
-    # Batch generate embeddings in blocks of 100 to optimize network latency
+    # Batch generate embeddings in blocks of 20 to avoid exceeding the 20,000 TPM limit
     for i in range(0, len(texts_to_embed), batch_size):
         batch = texts_to_embed[i:i + batch_size]
         
         # Exponential backoff retry logic for 429 rate limit errors
-        retries = 5
-        backoff = 2.0
+        retries = 6
+        backoff = 3.0
         response = None
         
         for attempt in range(retries):
@@ -111,8 +111,8 @@ async def process_and_store_chunks(raw_chunks: List[Dict[str, Any]], session_id:
             for embedding in response.embeddings:
                 all_vectors.append(embedding.values)
                 
-        # Slight delay to throttle calls and prevent bursting the API rate limits
-        await asyncio.sleep(0.25)
+        # Throttling delay to prevent bursting the API rate limits
+        await asyncio.sleep(2.0)
 
     # Compile and structure records to be inserted into the document_chunks table
     records_to_insert = []
