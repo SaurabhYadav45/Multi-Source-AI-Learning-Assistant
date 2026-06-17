@@ -1,0 +1,18 @@
+# Python environment & cache
+backend/venv/
+backend/.env
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/app/api/__pycache__/
+backend/app/services/__pycache__/
+
+# Node / frontend build dependencies
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# IDE and System files
+.vscode/
+.DS_Store
+Thumbs.db
