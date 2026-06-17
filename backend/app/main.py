@@ -38,7 +38,7 @@ import os
 
 allowed_origins_str = os.environ.get("CORS_ALLOWED_ORIGINS", "")
 if allowed_origins_str:
-    allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+    allowed_origins = [origin.strip().strip("'\"").rstrip("/") for origin in allowed_origins_str.split(",") if origin.strip()]
 else:
     allowed_origins = [
         "http://localhost:5173",
@@ -52,6 +52,10 @@ app.add_middleware(
     allow_methods=["*"],          # Allow GET, POST, OPTIONS, DELETE, etc.
     allow_headers=["*"],          # Allow all client headers
 )
+
+@app.on_event("startup")
+async def startup_event():
+    print(f"Loaded CORS Allowed Origins: {allowed_origins}")
 
 # Register endpoints under prefix /api
 app.include_router(upload_router, prefix="/api", tags=["Upload"])
