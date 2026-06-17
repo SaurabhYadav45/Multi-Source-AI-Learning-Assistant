@@ -15,7 +15,7 @@ const generateUUID = () => {
   });
 };
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export const AppProvider = ({ children }) => {
   // Load initial sessions from localStorage or create a default session

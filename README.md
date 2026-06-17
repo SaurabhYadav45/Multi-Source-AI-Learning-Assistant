@@ -37,10 +37,14 @@ GOOGLE_API_KEY=your_gemini_api_key_here
 # Supabase Credentials & Settings
 SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_SERVICE_KEY=your-supabase-service-role-key
+
+# (Optional) Production CORS allowed origins (comma-separated URLs)
+CORS_ALLOWED_ORIGINS=https://my-frontend.vercel.app,https://another-domain.com
 ```
 
 * **`GOOGLE_API_KEY`**: Authenticates requests to Google GenAI SDK and LangChain ChatGoogleGenerativeAI (`gemini-2.5-flash` and `gemini-embedding-001`).
 * **`SUPABASE_URL` & `SUPABASE_SERVICE_KEY`**: Used to communicate with the vector database to store chunks and execute the `match_documents` similarity search RPC.
+* **`CORS_ALLOWED_ORIGINS`**: (Optional) Comma-separated list of deployed frontend URLs to whitelist on the backend to avoid browser CORS policy blocking in production. Defaults to localhost domains if omitted.
 
 ---
 

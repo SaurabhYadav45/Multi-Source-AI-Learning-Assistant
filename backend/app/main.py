@@ -34,12 +34,22 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure Cross-Origin Resource Sharing (CORS) Middleware
 # Allows secure API requests from Vite or React local frontend servers
+import os
+
+allowed_origins_str = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+if allowed_origins_str:
+    allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Standard React Dev Server
-        "http://localhost:5173"   # Standard Vite Dev Server
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],          # Allow GET, POST, OPTIONS, DELETE, etc.
     allow_headers=["*"],          # Allow all client headers
