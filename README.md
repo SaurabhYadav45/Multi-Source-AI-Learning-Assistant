@@ -104,9 +104,13 @@ During development, we encountered several roadblocks. Below is a summary of whe
 * **Problem**: Arbitrary web URLs often contain noise (headers, footer links, cookie warnings, sidebars) that pollutes vector embeddings. Additionally, some sites block basic crawlers.
 * **Resolution**: We integrated `trafilatura` as our primary extractor to strip boilerplate layouts and extract clean structural Markdown content. For cases where `trafilatura` fails or returns empty text, we wrote an asynchronous fallback scraper using `httpx` (configured with human-like user agent headers) and `BeautifulSoup` + `lxml` to target specific reading elements (`h1`, `h2`, `h3`, `p`, `li`, `blockquote`).
 
-### Challenge 2: Multilingual and Auto-Generated YouTube Transcripts
-* **Problem**: Attempting to fetch English transcripts using `youtube_transcript_api` failed with exceptions when a video only had Hindi, Spanish, or auto-generated transcripts.
-* **Resolution**: We refactored the extraction helper in `extractors.py` to first retrieve the video's transcript list. We attempt to load English (`en`) first, and if not present, we catch the exception and fall back to the first available transcript (Hindi, Spanish, auto-translated) rather than crashing, ensuring broad multilingual compatibility.
+### Challenge 2: Multilingual Captions & YouTube Cloud IP Block (RequestBlocked)
+* **Problem**: 
+  1. Attempting to fetch English transcripts failed when a video only had Hindi, Spanish, or auto-generated captions.
+  2. In the deployed environment (Render), YouTube actively blocks requests originating from cloud provider IP addresses, raising a `RequestBlocked` exception.
+* **Resolution**: 
+  1. We refactored the extraction helper in `extractors.py` to fetch the transcript list and fall back to the first available caption language (e.g. auto-generated Hindi) if English is unavailable.
+  2. For the cloud IP block, we implemented specific exception logging to surface the `RequestBlocked` message. While proxies or cookies can bypass this, we document this as a hosting platform constraint. YouTube transcript extraction remains fully functional when run locally using a standard residential/office ISP connection.
 
 ### Challenge 3: Gemini 429 API Key Resource Exhaustion
 * **Problem**: Rapidly processing files, generating summaries, and streaming chats caused Gemini API limits to trigger HTTP `429 Resource Exhausted` errors, disrupting user sessions.
