@@ -116,9 +116,12 @@ async def extract_text_from_youtube(url: str) -> List[Dict[str, Any]]:
     except Exception as e:
         if isinstance(e, ValueError):
             raise e
+        # Print the exact exception to server stdout logs for debugging cloud IP blocks
+        print(f"YouTube transcript extraction failed for video {video_id}: {type(e).__name__} - {str(e)}")
         raise ValueError(
             f"Could not retrieve transcript for video '{video_id}'. "
-            "The video may not have closed captions or transcripts enabled."
+            f"The video may not have closed captions enabled. "
+            f"Details: {type(e).__name__} - {str(e)}"
         )
 
     extracted_chunks = []
